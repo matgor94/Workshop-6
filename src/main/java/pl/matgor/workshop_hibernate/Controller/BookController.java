@@ -1,15 +1,14 @@
 package pl.matgor.workshop_hibernate.Controller;
 
+import lombok.experimental.PackagePrivate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import pl.matgor.workshop_hibernate.Model.Book;
 import pl.matgor.workshop_hibernate.Services.BookService;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 
 @Controller
@@ -41,5 +40,22 @@ public class BookController {
         return "redirect:/book/allBooks";
     }
 
+    @RequestMapping(value = "/editBook/{id}", method = RequestMethod.GET)
+    public String editBook(@PathVariable long id, Model model){
+        model.addAttribute("book", bookService.get(id));
+        return "editBookForm.jsp";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteBook(@PathVariable long id){
+        bookService.deleteBook(id);
+        return "redirect:/book/allBooks";
+    }
+
+    @GetMapping("/details/{id}")
+    public String detailsOfBook(@PathVariable long id, Model model){
+        model.addAttribute("book", bookService.get(id).orElseThrow(EntityNotFoundException::new));
+        return "detailsBook";
+    }
 
 }
